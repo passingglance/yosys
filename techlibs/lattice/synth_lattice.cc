@@ -496,7 +496,6 @@ struct SynthLatticePass : public ScriptPass
 	}
 } SynthLatticePass;
 
-/*
 struct SynthEcp5Pass : public Pass
 {
 	SynthEcp5Pass() : Pass("synth_ecp5", "synthesis for ECP5 FPGAs") { }
@@ -511,6 +510,5 @@ struct SynthEcp5Pass : public Pass
 		Pass::call(design, args);
 	}
 } SynthEcp5Pass;
-*/
 
 PRIVATE_NAMESPACE_END
