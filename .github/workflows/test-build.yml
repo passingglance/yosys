@@ -128,9 +128,9 @@ jobs:
           path: build.tar
           retention-days: 1
 
-  test-linux:
+  test-yosys:
     name: Run tests
-    needs: build-linux
+    needs: build-yosys
     runs-on: ${{ matrix.os }}
     env:
       CC: clang
