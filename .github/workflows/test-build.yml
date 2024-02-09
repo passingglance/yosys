@@ -114,6 +114,10 @@ jobs:
           make config-${CC%%-*}
           make -j$procs CXXSTD=$CXXSTD CC=$CC CXX=$CXX LD=$CC
 
+      - name: Log yosys-config output
+        run: |
+          ./yosys-config || true
+
   build-yosys:
     name: Reusable Yosys build
     runs-on: ${{ matrix.os }}
