@@ -9,7 +9,7 @@ on:
     - master
 
 jobs:
-  test-builds:
+  test-compile:
     name: Compiler testing
     runs-on: ${{ matrix.os }}
     env:
@@ -119,24 +119,13 @@ jobs:
           ./yosys-config || true
 
   build-yosys:
-    name: Reusable Yosys build
+    name: Reusable build
     runs-on: ${{ matrix.os }}
     env:
-      CC: ${{ matrix.compiler }}
-      CXX: ${{ matrix.compiler }}
-      CXXSTD: ${{ matrix.cpp_std }}
+      CC: clang
     strategy:
       matrix:
-        os:
-          - ubuntu-20.04
-        compiler:
-          - 'clang'
-        cpp_std:
-          - 'c++11'
-        include:
-          # Add os_name
-          - os: ubuntu-20.04
-            os_name: focal
+        os: [ubuntu-20.04]
       fail-fast: false
     steps:
       - name: Install Linux Dependencies
@@ -167,12 +156,6 @@ jobs:
           echo "$(brew --prefix flex)/bin" >> $GITHUB_PATH
           echo "procs=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
 
-      - name: Tool versions
-        shell: bash
-        run: |
-          $CC --version
-          $CXX --version
-
       - name: Checkout Yosys
         uses: actions/checkout@v4
 
@@ -181,8 +164,12 @@ jobs:
         run: |
           mkdir build
           cd build
-          make -f ../Makefile config-${CC%%-*}
-          make -f ../Makefile -j$procs CXXSTD=$CXXSTD CC=$CC CXX=$CXX LD=$CC
+          make -f ../Makefile config-$CC
+          make -f ../Makefile -j$procs
+
+      - name: Log yosys-config output
+        run: |
+          ./yosys-config || true
 
       - name: Compress build
         shell: bash
@@ -191,7 +178,6 @@ jobs:
           tar -cvf ../build.tar share/ yosys yosys-*
 
       - name: Store build artifact
-        if: (matrix.cpp_std == 'c++11') && (matrix.compiler == 'clang')
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}
